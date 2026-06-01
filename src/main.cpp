@@ -57,7 +57,7 @@ int main()
     
     while (window.isOpen())
     {
-        if (Keyboard::isKeyPressed(Keyboard::Escape))
+        if (Keyboard::isKeyPressed(Keyboard::Escape) || Keyboard::isKeyPressed(Keyboard::Q))
         {
             window.close();
         }
