@@ -12,7 +12,7 @@ TARGET   := timber
 all: $(TARGET)
 
 $(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $(SRC) -o $(TARGET) $(LDFLAGS) $(LDLIBS)
+	bear -- $(CXX) $(CXXFLAGS) $(INCLUDES) $(SRC) -o $(TARGET) $(LDFLAGS) $(LDLIBS)
 
 run: $(TARGET)
 	./$(TARGET)
@@ -20,4 +20,7 @@ run: $(TARGET)
 clean:
 	rm -f $(TARGET)
 
-.PHONY: all run clean
+distclean: clean
+	rm -f compile_commands.json
+
+.PHONY: all run clean distclean
