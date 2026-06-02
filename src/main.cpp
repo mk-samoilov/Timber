@@ -1,6 +1,57 @@
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 using namespace sf;
+using namespace std;
+
+class Cloud {
+public:
+    Sprite spriteCloud;
+    int cloudID;
+
+    Cloud(Texture& textureCloud, int cloudID)
+        : cloudID(cloudID)
+    {
+        spriteCloud.setTexture(textureCloud);
+
+        spawn();
+    }
+
+    void update(Time& dt) {
+        spriteCloud.setPosition(
+            spriteCloud.getPosition().x - (speed * dt.asSeconds()),
+            spriteCloud.getPosition().y
+        ); 
+
+        if (spriteCloud.getPosition().x < -310) {
+            respawn();
+        }
+    }
+private:
+    int speed = 0;
+
+    int gen_width() {
+        return (rand() % 1920 + cloudID * 37) % 1920;
+    }
+
+    int gen_height() {
+        return 12 + ((rand() % 200 + cloudID * 37) % 200);
+    }
+
+    int gen_speed() {
+        return 10 + ((rand() % 85 + cloudID * 37) % 85);
+    }
+
+    void spawn() {
+        speed = gen_speed();
+        spriteCloud.setPosition(gen_width(), gen_height());
+    }
+
+    void respawn() {
+        speed = gen_speed();
+        spriteCloud.setPosition(2000, gen_height());
+    }
+};
 
 int main()
 {
@@ -8,6 +59,8 @@ int main()
     RenderWindow window(vm, "Timber!", Style::Fullscreen);
 
     window.setFramerateLimit(120);
+
+    srand((int)time(0));
 
     Texture textureBackground;
     textureBackground.loadFromFile("assets/graphics/background.png");
@@ -36,25 +89,16 @@ int main()
     Texture textureCloud;
     textureCloud.loadFromFile("assets/graphics/cloud.png");
 
-    Sprite spriteCloud1;
-    Sprite spriteCloud2;
-    Sprite spriteCloud3;
-    spriteCloud1.setTexture(textureCloud);
-    spriteCloud2.setTexture(textureCloud);
-    spriteCloud3.setTexture(textureCloud);
+    int cloudsCount = 4;
 
-    spriteCloud1.setPosition(0, 0);
-    spriteCloud2.setPosition(0, 250);
-    spriteCloud3.setPosition(0, 500);
+    vector<Cloud> clouds;
+    clouds.reserve(cloudsCount);
+    for (int i = 0; i < cloudsCount; i++) {
+        clouds.emplace_back(textureCloud, i + 1);
+    }
 
-    bool cloud1Active = false;
-    bool cloud2Active = false;
-    bool cloud3Active = false;
+    Clock clock;
 
-    float cloud1Speed = 0.0f;
-    float cloud2Speed = 0.0f;
-    float cloud3Speed = 0.0f;
-    
     while (window.isOpen())
     {
         if (Keyboard::isKeyPressed(Keyboard::Escape) || Keyboard::isKeyPressed(Keyboard::Q))
@@ -62,16 +106,38 @@ int main()
             window.close();
         }
 
+        Time dt = clock.restart();
 
+        if (!beeActive)
+        {
+            beeSpeed = (rand() % 200) + 200;
 
+            float height = (rand() % 500) + 500;
+            spriteBee.setPosition(2000, height);
+
+            beeActive = true;
+        }
+        else {
+            spriteBee.setPosition(
+                spriteBee.getPosition().x - (beeSpeed * dt.asSeconds()),
+                spriteBee.getPosition().y
+            );
+
+            if (spriteBee.getPosition().x < -100)
+            {
+                beeActive = false;
+            }
+        }
 
         window.clear();
 
         window.draw(spriteBackgound);
-       
-        window.draw(spriteCloud1);
-        window.draw(spriteCloud2);
-        window.draw(spriteCloud3);
+
+        for (auto& cloud : clouds) {
+            cloud.update(dt);
+
+            window.draw(cloud.spriteCloud);
+        }
 
         window.draw(spriteTree);
         
@@ -81,4 +147,4 @@ int main()
     }
 
     return 0;
-}
+};
