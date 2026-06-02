@@ -62,6 +62,10 @@ int main()
 
     srand((int)time(0));
 
+    Clock clock;
+
+    bool paused = true;
+
     Texture textureBackground;
     textureBackground.loadFromFile("assets/graphics/background.png");
 
@@ -89,7 +93,7 @@ int main()
     Texture textureCloud;
     textureCloud.loadFromFile("assets/graphics/cloud.png");
 
-    int cloudsCount = 4;
+    int cloudsCount = 3;
 
     vector<Cloud> clouds;
     clouds.reserve(cloudsCount);
@@ -97,13 +101,16 @@ int main()
         clouds.emplace_back(textureCloud, i + 1);
     }
 
-    Clock clock;
-
     while (window.isOpen())
     {
         if (Keyboard::isKeyPressed(Keyboard::Escape) || Keyboard::isKeyPressed(Keyboard::Q))
         {
             window.close();
+        }
+
+        if (Keyboard::isKeyPressed(Keyboard::Return))
+        {
+            paused = false;
         }
 
         Time dt = clock.restart();
