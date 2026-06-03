@@ -1,5 +1,7 @@
-#include <SFML/Graphics.hpp>
+#include <sstream>
 #include <vector>
+
+#include <SFML/Graphics.hpp>
 
 using namespace sf;
 using namespace std;
@@ -66,6 +68,40 @@ int main()
 
     bool paused = true;
 
+    int score = 0;
+
+    Text startMessageText;
+    Text scoreText;
+    
+    Font font;
+    font.loadFromFile("assets/fonts/HighlandGothicFLF.ttf");
+
+    startMessageText.setFont(font);
+    scoreText.setFont(font);
+
+    startMessageText.setString("Press Enter for start!");
+    scoreText.setString("Score: 0");
+
+    startMessageText.setCharacterSize(75);
+    scoreText.setCharacterSize(80);
+
+    startMessageText.setFillColor(Color::White);
+    scoreText.setFillColor(Color::White);
+
+    FloatRect textRect = startMessageText.getLocalBounds();
+
+    startMessageText.setOrigin(
+        textRect.left + textRect.width / 2.0f,
+        textRect.top + textRect.height / 2.0
+    );
+
+    startMessageText.setPosition(
+        1920 / 2.0f,
+        1080 / 2.0
+    );
+
+    scoreText.setPosition(20, 20);
+
     Texture textureBackground;
     textureBackground.loadFromFile("assets/graphics/background.png");
 
@@ -113,6 +149,13 @@ int main()
             paused = false;
         }
 
+        if (paused) {
+            window.draw(spriteBackgound);
+            window.draw(startMessageText);
+            window.display();
+            continue;
+        }
+
         Time dt = clock.restart();
 
         if (!beeActive)
@@ -149,6 +192,11 @@ int main()
         window.draw(spriteTree);
         
         window.draw(spriteBee);
+
+        stringstream ss;
+        ss << "Score: " << score;
+        scoreText.setString(ss.str());
+        window.draw(scoreText);
 
         window.display();
     }
